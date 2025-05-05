@@ -26,6 +26,12 @@ const io = new Server(httpServer, {
     },
 });
 
+app.use(cors({
+    origin: 'https://befit.vibushdigital.com', // Allow your frontend domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
+}));
+
 // Middleware
 app.use(cors());
 app.use(express.json());
