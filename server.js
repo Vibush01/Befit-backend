@@ -26,6 +26,8 @@ const io = new Server(httpServer, {
     },
 });
 
+
+// Middleware
 app.use(cors({
     origin: 'https://befit.vibushdigital.com', // Allow your frontend domain
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
@@ -33,7 +35,6 @@ app.use(cors({
 }));
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB and Cloudinary
@@ -82,13 +83,13 @@ io.on('connection', (socket) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/gym', gymRoutes);
-app.use('/api/member', memberRoutes);
-app.use('/api/chat', chatRoutes);
-app.use('/api/trainer', trainerRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/contact', contactRoutes);
+app.use('/auth', authRoutes);
+app.use('/gym', gymRoutes);
+app.use('/member', memberRoutes);
+app.use('/chat', chatRoutes);
+app.use('/trainer', trainerRoutes);
+app.use('/admin', adminRoutes);
+app.use('/contact', contactRoutes);
 
 // Test Route
 app.get('/api/test', (req, res) => {
