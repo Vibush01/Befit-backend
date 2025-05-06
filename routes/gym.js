@@ -134,21 +134,33 @@ router.put('/update', authMiddleware, upload.array('photos', 5), async (req, res
 
         const { gymName, address, ownerName, ownerEmail, membershipPlans, deletePhotos } = req.body;
 
+        console.log('Received membershipPlans:', membershipPlans); // Add logging
+        console.log('Type of membershipPlans:', typeof membershipPlans); // Check the type
+
         if (gymName) gym.gymName = gymName;
         if (address) gym.address = address;
         if (ownerName) gym.ownerName = ownerName;
         if (ownerEmail) gym.ownerEmail = ownerEmail;
-        if (membershipPlans) gym.membershipPlans = JSON.parse(membershipPlans);
+        if (membershipPlans) {
+            if (typeof membershipPlans !== 'string') {
+                return res.status(400).json({ message: 'membershipPlans must be a JSON string' });
+            }
+            try {
+                gym.membershipPlans = JSON.parse(membershipPlans);
+            } catch (parseError) {
+                console.error('Error parsing membershipPlans:', parseError);
+                return res.status(400).json({ message: 'Invalid membershipPlans format', error: parseError.message });
+            }
+        }
 
         if (deletePhotos) {
             const photosToDelete = JSON.parse(deletePhotos);
             for (const photoUrl of photosToDelete) {
-                // Extract publicId from Cloudinary URL
                 const urlParts = photoUrl.split('/');
-                const fileName = urlParts[urlParts.length - 1]; // e.g., "<public_id>.jpg"
-                const publicId = fileName.split('.')[0]; // Remove the file extension
-                const folderPath = urlParts[urlParts.length - 2]; // e.g., "gym_photos"
-                const fullPublicId = `${folderPath}/${publicId}`; // e.g., "gym_photos/<public_id>"
+                const fileName = urlParts[urlParts.length - 1];
+                const publicId = fileName.split('.')[0];
+                const folderPath = urlParts[urlParts.length - 2];
+                const fullPublicId = `${folderPath}/${publicId}`;
                 await cloudinary.uploader.destroy(fullPublicId);
                 gym.photos = gym.photos.filter((photo) => photo !== photoUrl);
             }
