@@ -143,8 +143,13 @@ router.put('/update', authMiddleware, upload.array('photos', 5), async (req, res
         if (deletePhotos) {
             const photosToDelete = JSON.parse(deletePhotos);
             for (const photoUrl of photosToDelete) {
-                const publicId = photoUrl.split('/').pop().split('.')[0];
-                await cloudinary.uploader.destroy(`gym_photos/${publicId}`);
+                // Extract publicId from Cloudinary URL
+                const urlParts = photoUrl.split('/');
+                const fileName = urlParts[urlParts.length - 1]; // e.g., "<public_id>.jpg"
+                const publicId = fileName.split('.')[0]; // Remove the file extension
+                const folderPath = urlParts[urlParts.length - 2]; // e.g., "gym_photos"
+                const fullPublicId = `${folderPath}/${publicId}`; // e.g., "gym_photos/<public_id>"
+                await cloudinary.uploader.destroy(fullPublicId);
                 gym.photos = gym.photos.filter((photo) => photo !== photoUrl);
             }
         }
@@ -167,7 +172,6 @@ router.put('/update', authMiddleware, upload.array('photos', 5), async (req, res
 
         await gym.save();
 
-        // Log the gym update event
         const eventLog = new EventLog({
             event: 'Gym Update',
             page: '/update-gym',
