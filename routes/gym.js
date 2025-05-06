@@ -394,46 +394,46 @@ router.delete('/members/:memberId', authMiddleware, async (req, res) => {
 });
 
 // // Remove a trainer from the gym (Gym only)
-// router.delete('/trainers/:trainerId', authMiddleware, async (req, res) => {
-//     if (req.user.role !== 'gym') {
-//         return res.status(403).json({ message: 'Access denied' });
-//     }
+router.delete('/trainers/:trainerId', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'gym') {
+        return res.status(403).json({ message: 'Access denied' });
+    }
 
-//     try {
-//         const gym = await Gym.findById(req.user.id);
-//         if (!gym) {
-//             return res.status(404).json({ message: 'Gym not found' });
-//         }
+    try {
+        const gym = await Gym.findById(req.user.id);
+        if (!gym) {
+            return res.status(404).json({ message: 'Gym not found' });
+        }
 
-//         const trainer = await Trainer.findById(req.params.trainerId);
-//         if (!trainer || trainer.gym.toString() !== gym._id.toString()) {
-//             return res.status(404).json({ message: 'Trainer not found or not in this gym' });
-//         }
+        const trainer = await Trainer.findById(req.params.trainerId);
+        if (!trainer || trainer.gym.toString() !== gym._id.toString()) {
+            return res.status(404).json({ message: 'Trainer not found or not in this gym' });
+        }
 
-//         // Remove trainer from gym
-//         gym.trainers = gym.trainers.filter((id) => id.toString() !== req.params.trainerId);
-//         await gym.save();
+        // Remove trainer from gym
+        gym.trainers = gym.trainers.filter((id) => id.toString() !== req.params.trainerId);
+        await gym.save();
 
-//         // Clear gym from trainer
-//         trainer.gym = undefined;
-//         await trainer.save();
+        // Clear gym from trainer
+        trainer.gym = undefined;
+        await trainer.save();
 
-//         // Log the trainer removal event
-//         const eventLog = new EventLog({
-//             event: 'Trainer Removed',
-//             page: '/membership-management',
-//             user: req.user.id,
-//             userModel: 'Gym',
-//             details: `Gym removed trainer ${trainer.name}`,
-//         });
-//         await eventLog.save();
+        // Log the trainer removal event
+        const eventLog = new EventLog({
+            event: 'Trainer Removed',
+            page: '/membership-management',
+            user: req.user.id,
+            userModel: 'Gym',
+            details: `Gym removed trainer ${trainer.name}`,
+        });
+        await eventLog.save();
 
-//         res.json({ message: 'Trainer removed successfully' });
-//     } catch (error) {
-//         console.error('Error in DELETE /trainers/:trainerId:', error);
-//         res.status(500).json({ message: 'Server error', error: error.message });
-//     }
-// });
+        res.json({ message: 'Trainer removed successfully' });
+    } catch (error) {
+        console.error('Error in DELETE /trainers/:trainerId:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
 
 // Get members for membership management (Gym and Trainers)
 router.get('/members', authMiddleware, async (req, res) => {
