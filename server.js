@@ -29,7 +29,7 @@ const io = new Server(httpServer, {
 
 // Middleware
 app.use(cors({
-    origin: 'https://befit.vibushdigital.com', // Allow your frontend domain
+    origin: ['https://befit.vibushdigital.com', 'https://easyfittrack.netlify.app'], // Allow your frontend domain
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
 }));
