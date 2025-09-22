@@ -21,7 +21,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: 'https://befit.vibushdigital.com',
+        origin: ['https://befit.vibushdigital.com', 'https://easyfittrack.netlify.app'],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
     },
 });
